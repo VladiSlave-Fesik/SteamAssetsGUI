@@ -64,16 +64,16 @@ def download_image(url, save_dir):
             file_name = os.path.basename(url)
             save_path = os.path.join(save_dir, file_name)
 
-            # Сохранить файл
+            # Save the file
             with open(save_path, 'wb') as file:
                 file.write(response.content)
-            print(f'Фотография успешно скачана и сохранена в {save_path}')
+            print(f'Image successfully downloaded and saved to {save_path}')
             return save_path
         else:
-            print(f'Ошибка при скачивании фотографии. Код статуса: {response.status_code}')
+            print(f'Error downloading image. Status code: {response.status_code}')
             return None
     except requests.exceptions.RequestException as e:
-        print(f'Произошла ошибка при запросе: {e}')
+        print(f'Error during request: {e}')
         return None
 
 
