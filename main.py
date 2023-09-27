@@ -23,7 +23,17 @@ class SteamAssetsGUI(ctk.CTk):
         # Create a validation function to allow only digits
         validate_digits = self.register(self.validate_digits)
 
-        self.id_entry = ctk.CTkEntry(self, validate="key", validatecommand=(validate_digits, '%P'))
+        # folders
+        self.folder_temp = 'temp'
+        self.folder_download = 'download'
+        self.folders_list = [self.folder_temp, self.folder_download]
+
+        for folder in self.folders_list:
+            if not os.path.exists(folder) or not os.path.isdir(folder):
+                print(f'Created {folder} folder')
+                os.mkdir(folder)
+
+        self.id_entry = ctk.CTkEntry(self, validate='key', validatecommand=(validate_digits, '%P'))
         self.id_entry.pack(anchor='w')
 
         search_button = ctk.CTkButton(self, text='Search', command=self.start_search_func)
@@ -54,7 +64,7 @@ class SteamAssetsGUI(ctk.CTk):
     def search_func(self):
         self.images = []  # Clear existing images
         for url in parser.find_available_alt_assets(self.id_entry.get()):
-            image = parser.download_image(url, 'temp')
+            image = parser.download_image(url, self.folder_temp)
             if image:
                 self.images.append(image)
                 self.images_names.append(url.split('/')[-1].split('.')[0])
@@ -112,12 +122,13 @@ class SteamAssetsGUI(ctk.CTk):
         if self.images:
             file_name = self.images[self.image_index]
             file_name = os.path.basename(file_name)
-            copy(os.path.join('temp', file_name), os.path.join('downloads', file_name))
+            copy(os.path.join(self.folder_temp, file_name), os.path.join(self.folder_download, file_name))
 
     def on_close(self):
-        for file in os.listdir('temp'):
-            os.remove(os.path.join('temp', file))
+        for file in os.listdir(self.folder_temp):
+            os.remove(os.path.join(self.folder_temp, file))
         self.destroy()
+
 
 if __name__ == '__main__':
     app = SteamAssetsGUI()
